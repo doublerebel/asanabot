@@ -36,7 +36,7 @@ class AsanaBot
       return @again()
 
     tasks = @sortTasksByRecent tasks
-    @modified_since = new Date (new Date tasks[0].created_at).getTime() + 1000
+    @modified_since = new Date (new Date tasks[0].modified_at).getTime() + 1000
 
     await @callWebhook tasks, defer err
     @log.error err if err
@@ -49,10 +49,13 @@ class AsanaBot
       modified_since: @modified_since.toISOString()
       opt_fields: @taskFields.join ","
 
-    console.log "finding tasks modified since: #{params.modified_since}"
+    console.log "finding tasks for AS##{@projectId} modified since: #{params.modified_since}"
     await (@client.tasks.findByProject @projectId, params).nodeify defer err, tasks
     @log.error err if err
-    return tasks
+    return null unless tasks?.length
+
+    newTasks = (task for task in tasks when (new Date task.created_at) > (new Date params.modified_since))
+    return newTasks
 
   again: => @timeout = setTimeout @poll, @interval * 1000
 
