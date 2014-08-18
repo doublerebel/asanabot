@@ -17,9 +17,9 @@ class AsanaBot
     "modified_at"
   ]
 
-  constructor: (@projectId, @interval = 20, @hookUrl, @log = console) ->
+  constructor: (@projectId, @interval = 20, @hookUrl, modified_since = 0, @log = console) ->
     @client = Asana.Client.basicAuth process.env.ASANA_API_KEY
-    @modified_since = new Date 0
+    @modified_since = new Date modified_since
     @tasks = []
 
   start: =>
@@ -36,7 +36,7 @@ class AsanaBot
       return @again()
 
     tasks = @sortTasksByRecent tasks
-    @modified_since = new Date tasks[0].modified_at
+    @modified_since = new Date (new Date tasks[0].modified_at).getTime() + 1
 
     await @callWebhook tasks, defer err
     @log.error err if err
@@ -46,7 +46,7 @@ class AsanaBot
 
   getTasks: (autocb) =>
     params =
-      modified_since: @modified_since
+      modified_since: @modified_since.toISOString()
       opt_fields: @taskFields.join ","
 
     await (@client.tasks.findByProject @projectId, params).nodeify defer err, tasks
