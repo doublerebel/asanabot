@@ -1,11 +1,12 @@
 {
   "name": "asanabot",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Bot to poll Asana for task updates and POST them to webhook",
   "main": "./lib/asanabot.js",
   "dependencies": {
     "asana": "~0.1.2",
-    "awaitajax": "~0.0.2"
+    "awaitajax": "~0.0.2",
+    "iced-runtime": "~1.0.1"
   },
   "devDependencies": {},
   "scripts": {
