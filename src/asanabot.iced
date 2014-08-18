@@ -36,7 +36,7 @@ class AsanaBot
       return @again()
 
     tasks = @sortTasksByRecent tasks
-    @modified_since = new Date (new Date tasks[0].modified_at).getTime() + 1000
+    @modified_since = new Date (new Date tasks[0].created_at).getTime() + 1000
 
     await @callWebhook tasks, defer err
     @log.error err if err
